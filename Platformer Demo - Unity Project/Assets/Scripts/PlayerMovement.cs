@@ -1,9 +1,9 @@
 /*
 	Created by @DawnosaurDev at youtube.com/c/DawnosaurStudios
-	Thanks so much for checking this out and I hope you find it helpful! 
-	If you have any further queries, questions or feedback feel free to reach out on my twitter or leave a comment on youtube :D
+	확인해 주셔서 감사드리며 도움이 되셨기를 바랍니다.
+	추가 질문, 질문 또는 피드백이 있는 경우 언제든지 내 트위터에 문의하거나 YouTube에 댓글을 남겨주세요. :D
 
-	Feel free to use this in your own games, and I'd love to see anything you make!
+	여러분의 게임에 자유롭게 사용해 보세요. 여러분이 만드는 모든 것을 보고 싶습니다!
  */
 
 using System.Collections;
@@ -11,28 +11,28 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-	//Scriptable object which holds all the player's movement parameters. If you don't want to use it
-	//just paste in all the parameters, though you will need to manuly change all references in this script
-	public PlayerData Data;
+    //플레이어의 모든 이동 매개변수를 보유하는 스크립트 가능한 개체입니다. 사용하고 싶지 않다면
+    //모든 매개변수를 붙여넣기만 하면 됩니다. 단, 이 스크립트의 모든 참조를 수동으로 변경해야 합니다.
+    public PlayerData Data;
 
 	#region COMPONENTS
     public Rigidbody2D RB { get; private set; }
-	//Script to handle all player animations, all references can be safely removed if you're importing into your own project.
-	public PlayerAnimator AnimHandler { get; private set; }
-	#endregion
+    //모든 플레이어 애니메이션을 처리하기 위한 스크립트입니다. 자신의 프로젝트로 가져오는 경우 모든 참조를 안전하게 제거할 수 있습니다.
+    public PlayerAnimator AnimHandler { get; private set; }
+    #endregion
 
-	#region STATE PARAMETERS
-	//Variables control the various actions the player can perform at any time.
-	//These are fields which can are public allowing for other sctipts to read them
-	//but can only be privately written to.
-	public bool IsFacingRight { get; private set; }
+    #region STATE PARAMETERS
+    //변수는 플레이어가 언제든지 수행할 수 있는 다양한 작업을 제어합니다.
+    //다른 sctipt가 읽을 수 있도록 공개할 수 있는 필드입니다.
+    //하지만 개인적으로만 쓸 수 있습니다.
+    public bool IsFacingRight { get; private set; }
 	public bool IsJumping { get; private set; }
 	public bool IsWallJumping { get; private set; }
 	public bool IsDashing { get; private set; }
 	public bool IsSliding { get; private set; }
 
-	//Timers (also all fields, could be private and a method returning a bool could be used)
-	public float LastOnGroundTime { get; private set; }
+    //타이머(또한 모든 필드는 비공개일 수 있고 bool을 반환하는 메서드를 사용할 수 있음)
+    public float LastOnGroundTime { get; private set; }
 	public float LastOnWallTime { get; private set; }
 	public float LastOnWallRightTime { get; private set; }
 	public float LastOnWallLeftTime { get; private set; }
@@ -55,17 +55,16 @@ public class PlayerMovement : MonoBehaviour
 
 	#region INPUT PARAMETERS
 	private Vector2 _moveInput;
-
 	public float LastPressedJumpTime { get; private set; }
 	public float LastPressedDashTime { get; private set; }
-	#endregion
+    #endregion
 
-	#region CHECK PARAMETERS
-	//Set all of these up in the inspector
-	[Header("Checks")] 
+    #region CHECK PARAMETERS
+    //Inspector에서 이 모든 것을 설정합니다.
+    [Header("Checks")] 
 	[SerializeField] private Transform _groundCheckPoint;
-	//Size of groundCheck depends on the size of your character generally you want them slightly small than width (for ground) and height (for the wall check)
-	[SerializeField] private Vector2 _groundCheckSize = new Vector2(0.49f, 0.03f);
+    //groundCheck의 크기는 캐릭터의 크기에 따라 일반적으로 폭(지면의 경우)과 높이(벽면의 경우)보다 약간 작게 만들고 싶습니다.
+    [SerializeField] private Vector2 _groundCheckSize = new Vector2(0.49f, 0.03f);
 	[Space(5)]
 	[SerializeField] private Transform _frontWallCheckPoint;
 	[SerializeField] private Transform _backWallCheckPoint;
@@ -412,11 +411,11 @@ public class PlayerMovement : MonoBehaviour
 		LastPressedJumpTime = 0;
 		LastOnGroundTime = 0;
 
-		#region Perform Jump
-		//We increase the force applied if we are falling
-		//This means we'll always feel like we jump the same amount 
-		//(setting the player's Y velocity to 0 beforehand will likely work the same, but I find this more elegant :D)
-		float force = Data.jumpForce;
+        #region Perform Jump
+        //떨어질 때 적용되는 힘을 증가시킵니다.
+        //이것은 우리가 항상 같은 양만큼 점프하는 것처럼 느낄 것임을 의미합니다.
+        //(미리 플레이어의 Y 속도를 0으로 설정하면 동일하게 작동할 것 같지만 이것이 더 우아하다고 생각합니다 :D)
+        float force = Data.jumpForce;
 		if (RB.velocity.y < 0)
 			force -= RB.velocity.y;
 
@@ -426,25 +425,25 @@ public class PlayerMovement : MonoBehaviour
 
 	private void WallJump(int dir)
 	{
-		//Ensures we can't call Wall Jump multiple times from one press
-		LastPressedJumpTime = 0;
+        //한 번의 누름으로 Wall Jump를 여러 번 호출할 수 없도록 합니다.
+        LastPressedJumpTime = 0;
 		LastOnGroundTime = 0;
 		LastOnWallRightTime = 0;
 		LastOnWallLeftTime = 0;
 
 		#region Perform Wall Jump
 		Vector2 force = new Vector2(Data.wallJumpForce.x, Data.wallJumpForce.y);
-		force.x *= dir; //apply force in opposite direction of wall
+		force.x *= dir; //벽 반대 방향으로 힘을 가함
 
-		if (Mathf.Sign(RB.velocity.x) != Mathf.Sign(force.x))
+        if (Mathf.Sign(RB.velocity.x) != Mathf.Sign(force.x))
 			force.x -= RB.velocity.x;
 
-		if (RB.velocity.y < 0) //checks whether player is falling, if so we subtract the velocity.y (counteracting force of gravity). This ensures the player always reaches our desired jump force or greater
-			force.y -= RB.velocity.y;
+		if (RB.velocity.y < 0) //플레이어가 떨어지고 있는지 확인하고, 그렇다면 속도 y(중력에 반하는 힘)를 뺍니다. 이를 통해 플레이어는 항상 원하는 점프력 이상에 도달할 수 있습니다.
+            force.y -= RB.velocity.y;
 
-		//Unlike in the run we want to use the Impulse mode.
-		//The default mode will apply are force instantly ignoring masss
-		RB.AddForce(force, ForceMode2D.Impulse);
+        //실행과 달리 Impulse 모드를 사용하려고 합니다.
+        //기본 모드는 질량을 즉시 무시하는 강제 적용됩니다.
+        RB.AddForce(force, ForceMode2D.Impulse);
 		#endregion
 	}
 	#endregion
@@ -453,10 +452,9 @@ public class PlayerMovement : MonoBehaviour
 	//Dash Coroutine
 	private IEnumerator StartDash(Vector2 dir)
 	{
-		//Overall this method of dashing aims to mimic Celeste, if you're looking for
-		// a more physics-based approach try a method similar to that used in the jump
-
-		LastOnGroundTime = 0;
+        //전체적으로 이 대시 방법은 Celeste를 모방하는 것을 목표로 합니다.
+        // 좀 더 물리 기반 접근 방식으로 점프에 사용된 것과 유사한 방법을 시도합니다.
+        LastOnGroundTime = 0;
 		LastPressedDashTime = 0;
 
 		float startTime = Time.time;
@@ -466,21 +464,21 @@ public class PlayerMovement : MonoBehaviour
 
 		SetGravityScale(0);
 
-		//We keep the player's velocity at the dash speed during the "attack" phase (in celeste the first 0.15s)
-		while (Time.time - startTime <= Data.dashAttackTime)
+        //"공격" 단계 동안 플레이어의 속도를 돌진 속도로 유지합니다(celeste에서는 처음 0.15초).
+        while(Time.time - startTime <= Data.dashAttackTime)
 		{
 			RB.velocity = dir.normalized * Data.dashSpeed;
-			//Pauses the loop until the next frame, creating something of a Update loop. 
-			//This is a cleaner implementation opposed to multiple timers and this coroutine approach is actually what is used in Celeste :D
-			yield return null;
+            //다음 프레임까지 루프를 일시 중지하여 업데이트 루프를 생성합니다.
+            //이것은 다중 타이머와 반대되는 보다 깔끔한 구현이며 이 코루틴 접근 방식은 실제로 Celeste에서 사용되는 것입니다. :D
+            yield return null;
 		}
 
 		startTime = Time.time;
 
 		_isDashAttacking = false;
 
-		//Begins the "end" of our dash where we return some control to the player but still limit run acceleration (see Update() and Run())
-		SetGravityScale(Data.gravityScale);
+        //플레이어에게 일부 제어권을 반환하지만 여전히 실행 가속을 제한하는 대시의 "끝"을 시작합니다(Update() 및 Run() 참조).
+        SetGravityScale(Data.gravityScale);
 		RB.velocity = Data.dashEndSpeed * dir.normalized;
 
 		while (Time.time - startTime <= Data.dashEndTime)
@@ -492,11 +490,11 @@ public class PlayerMovement : MonoBehaviour
 		IsDashing = false;
 	}
 
-	//Short period before the player is able to dash again
-	private IEnumerator RefillDash(int amount)
+    //플레이어가 다시 대시할 수 있을 때까지의 짧은 시간
+    private IEnumerator RefillDash(int amount)
 	{
-		//SHoet cooldown, so we can't constantly dash along the ground, again this is the implementation in Celeste, feel free to change it up
-		_dashRefilling = true;
+        //짧은 쿨다운으로 인해 지속적으로 땅을 따라 돌진할 수 없습니다. 다시 이것은 Celeste의 구현입니다. 자유롭게 변경하세요.
+        _dashRefilling = true;
 		yield return new WaitForSeconds(Data.dashRefillTime);
 		_dashRefilling = false;
 		_dashesLeft = Mathf.Min(Data.dashAmount, _dashesLeft + 1);
@@ -506,18 +504,19 @@ public class PlayerMovement : MonoBehaviour
 	#region OTHER MOVEMENT METHODS
 	private void Slide()
 	{
-		//We remove the remaining upwards Impulse to prevent upwards sliding
-		if(RB.velocity.y > 0)
+        //위로 미끄러지는 것을 방지하기 위해 나머지 위쪽 Impulse를 제거합니다.
+        if(RB.velocity.y > 0)
 		{
 		    RB.AddForce(-RB.velocity.y * Vector2.up,ForceMode2D.Impulse);
 		}
-	
-		//Works the same as the Run but only in the y-axis
-		//THis seems to work fine, buit maybe you'll find a better way to implement a slide into this system
-		float speedDif = Data.slideSpeed - RB.velocity.y;	
+
+        //실행과 동일하게 작동하지만 y축에서만 작동합니다.
+        //이것은 잘 작동하는 것 같지만 아마도 이 시스템에 슬라이드를 구현하는 더 좋은 방법을 찾을 수 있을 것입니다.
+        float speedDif = Data.slideSpeed - RB.velocity.y;	
 		float movement = speedDif * Data.slideAccel;
-		//So, we clamp the movement here to prevent any over corrections (these aren't noticeable in the Run)
-		//The force applied can't be greater than the (negative) speedDifference * by how many times a second FixedUpdate() is called. For more info research how force are applied to rigidbodies.
+        //따라서 과도한 수정을 방지하기 위해 여기서 움직임을 고정합니다(실행에서는 눈에 띄지 않습니다).
+        //적용된 힘은 두 번째 FixUpdate()가 호출되는 횟수만큼 (음수) speedDifference *보다 클 수 없습니다. 더 많은 정보를 원하시면 강체에 힘이 어떻게 적용되는지 조사해 보세요.
+        
 		movement = Mathf.Clamp(movement, -Mathf.Abs(speedDif)  * (1 / Time.fixedDeltaTime), Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime));
 
 		RB.AddForce(movement * Vector2.up);
